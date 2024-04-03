@@ -41,7 +41,10 @@ class ReasonEntry(Modal, title="Member warn"):
     )
 
     def __init__(
-        self, og_interaction: discord.Interaction["Red"], level: int, member: discord.Member
+        self,
+        og_interaction: discord.Interaction["Red"],
+        level: int,
+        member: discord.Member,
     ):
         super().__init__()
         self.og_interaction = og_interaction
@@ -57,10 +60,14 @@ class ReasonEntry(Modal, title="Member warn"):
             try:
                 duration = parse_timedelta(self.duration.value)
             except BadArgument:
-                await interaction.response.send_message(_("Invalid duration"), ephemeral=True)
+                await interaction.response.send_message(
+                    _("Invalid duration"), ephemeral=True
+                )
                 return
             if not duration:
-                await interaction.response.send_message(_("Invalid duration"), ephemeral=True)
+                await interaction.response.send_message(
+                    _("Invalid duration"), ephemeral=True
+                )
                 return
         if self.ban_days.value:
             try:
@@ -89,7 +96,9 @@ class ReasonEntry(Modal, title="Member warn"):
 
 
 class WarnView(View):
-    def __init__(self, og_interaction: discord.Interaction["Red"], member: discord.Member):
+    def __init__(
+        self, og_interaction: discord.Interaction["Red"], member: discord.Member
+    ):
         self.og_interaction = og_interaction
         self.member = member
         super().__init__(timeout=30)
@@ -110,27 +119,39 @@ class WarnView(View):
         await interaction.response.send_modal(modal)
 
     @button(label="Warn", style=discord.ButtonStyle.secondary, emoji="\N{WARNING SIGN}")
-    async def warn_1(self, interaction: discord.Interaction["Red"], button: discord.ui.Button):
+    async def warn_1(
+        self, interaction: discord.Interaction["Red"], button: discord.ui.Button
+    ):
         await self.warn(interaction, 1)
 
     @button(
-        label="Mute",
+        label="Timeout",
         style=discord.ButtonStyle.secondary,
         emoji="\N{SPEAKER WITH CANCELLATION STROKE}",
     )
-    async def warn_2(self, interaction: discord.Interaction["Red"], button: discord.ui.Button):
+    async def warn_2(
+        self, interaction: discord.Interaction["Red"], button: discord.ui.Button
+    ):
         await self.warn(interaction, 2)
 
     @button(label="Kick", style=discord.ButtonStyle.primary, emoji="\N{WOMANS BOOTS}")
-    async def warn_3(self, interaction: discord.Interaction["Red"], button: discord.ui.Button):
+    async def warn_3(
+        self, interaction: discord.Interaction["Red"], button: discord.ui.Button
+    ):
         await self.warn(interaction, 3)
 
-    @button(label="Softban", style=discord.ButtonStyle.primary, emoji="\N{WOMANS BOOTS}")
-    async def warn_4(self, interaction: discord.Interaction["Red"], button: discord.ui.Button):
+    @button(
+        label="Softban", style=discord.ButtonStyle.primary, emoji="\N{WOMANS BOOTS}"
+    )
+    async def warn_4(
+        self, interaction: discord.Interaction["Red"], button: discord.ui.Button
+    ):
         await self.warn(interaction, 4)
 
     @button(label="Ban", style=discord.ButtonStyle.danger, emoji="\N{HAMMER}")
-    async def warn_5(self, interaction: discord.Interaction["Red"], button: discord.ui.Button):
+    async def warn_5(
+        self, interaction: discord.Interaction["Red"], button: discord.ui.Button
+    ):
         await self.warn(interaction, 5)
 
 

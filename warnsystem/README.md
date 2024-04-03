@@ -2,7 +2,7 @@
 
 This is the WarnSystem cog for Red, rewrite of the V2 cog, BetterMod. It is an alternative to the core moderation system of Red, similar to Dyno. You can warn members up to 5 levels:
 1. simple warning
-2. mute (can be a temporary mute)
+2. timeout
 3. kick
 4. softban (ban then unban, which can cleanup the messages of an user up to a week)
 5. ban (can be a temporary ban, or even a hack ban, which allows you to ban on an user not on the server)
@@ -42,13 +42,7 @@ The cog is highly customizable and frequently updated. It's also built with an A
     ```
     *Note: If you already set a modlog channel with the modlogs cog, it will be used if you skip this part.*
 
-5.  Setup a mute role. **This might take a long time, depending on the number of text channels on your server.**
-    ```
-    [p]warnset mute
-    ```
-    The mutes are done with a role. Feel free to edit its permissions, but make sure it stays under the bot's top role!
-
-6.  (Optional) Import your data from BetterMod.
+5. (Optional) Import your data from BetterMod.
 
     **You must have the latest version of BetterMod before using this command. Using an outdated body will break the data of the cog!**
 

@@ -38,41 +38,6 @@ class SettingsMixin(MixinMeta):
         pass
 
     # commands are listed in the alphabetic order, like the help message
-    @warnset.command(name="autoupdate")
-    async def warnset_autoupdate(self, ctx: commands.Context, enable: bool = None):
-        """
-        Defines if the bot should update permissions of new channels for the mute role.
-
-        If enabled, for each new text channel and category created, the Mute role will be\
-        denied the permission to send messages and add reactions here.
-        Keeping this disabled might cause issues with channels created after the WarnSystem setup\
-        where muted members can talk.
-        """
-        guild = ctx.guild
-        current = await self.data.guild(guild).update_mute()
-        if enable is None:
-            await ctx.send(
-                _(
-                    "The bot currently {update} new channels. If you want to change this, "
-                    "type `[p]warnset autoupdate {opposite}`."
-                ).format(
-                    update=_("updates") if current else _("doesn't update"), opposite=not current
-                )
-            )
-        elif enable:
-            await self.data.guild(guild).update_mute.set(True)
-            await ctx.send(
-                _("Done. New created channels will be updated to keep the mute role working.")
-            )
-        else:
-            await self.data.guild(guild).update_mute.set(False)
-            await ctx.send(
-                _(
-                    "Done. New created channels won't be updated.\n**Make sure to update "
-                    "manually new channels to keep the mute role working as intended.**"
-                )
-            )
-
     @warnset.command("bandays")
     async def warnset_bandays(self, ctx: commands.Context, ban_type: str, days: int):
         """
@@ -105,7 +70,11 @@ class SettingsMixin(MixinMeta):
             )
             return
         if not 0 <= days <= 7:
-            is_ban = _("You can set 0 to disable messages deletion.") if ban_type == "ban" else ""
+            is_ban = (
+                _("You can set 0 to disable messages deletion.")
+                if ban_type == "ban"
+                else ""
+            )
             await ctx.send(
                 _(
                     "The number of days of messages to delete must be between "
@@ -145,9 +114,13 @@ class SettingsMixin(MixinMeta):
         """
         guild = ctx.guild
         if not channel.permissions_for(guild.me).send_messages:
-            await ctx.send(_("I don't have the permission to send messages in that channel."))
+            await ctx.send(
+                _("I don't have the permission to send messages in that channel.")
+            )
         elif not channel.permissions_for(guild.me).embed_links:
-            await ctx.send(_("I don't have the permissions to send embed links in that channel."))
+            await ctx.send(
+                _("I don't have the permissions to send embed links in that channel.")
+            )
         else:
             if not level:
                 await self.data.guild(guild).channels.main.set(channel.id)
@@ -175,7 +148,9 @@ class SettingsMixin(MixinMeta):
                 )
 
     @warnset.command("color")
-    async def warnset_color(self, ctx: commands.Context, level: int, color: discord.Color):
+    async def warnset_color(
+        self, ctx: commands.Context, level: int, color: discord.Color
+    ):
         """
         Edit the color of the embed.
 
@@ -228,8 +203,12 @@ class SettingsMixin(MixinMeta):
             for member, logs in data.items():
                 cases = []
                 for case in [y for x, y in logs.items() if x.startswith("case")]:
-                    level = {"Simple": 1, "Kick": 3, "Softban": 4, "Ban": 5}.get(case["level"], 1)
-                    timestamp = datetime.strptime(case["timestamp"], "%d %b %Y %H:%M").timestamp()
+                    level = {"Simple": 1, "Kick": 3, "Softban": 4, "Ban": 5}.get(
+                        case["level"], 1
+                    )
+                    timestamp = datetime.strptime(
+                        case["timestamp"], "%d %b %Y %H:%M"
+                    ).timestamp()
                     cases.append(
                         {
                             "level": level,
@@ -241,7 +220,9 @@ class SettingsMixin(MixinMeta):
                         }
                     )
                     total_cases += 1
-                async with self.data.custom("MODLOGS", guild.id, int(member)).x() as logs:
+                async with self.data.custom(
+                    "MODLOGS", guild.id, int(member)
+                ).x() as logs:
                     logs.extend(cases)
             return total_cases
 
@@ -320,7 +301,9 @@ class SettingsMixin(MixinMeta):
             await ctx.send(_("Starting conversion... This might take a long time."))
             total = await convert(content)
         elif pred.result == 1:
-            await ctx.send(_("Deleting server logs... Settings, such as channels, are kept."))
+            await ctx.send(
+                _("Deleting server logs... Settings, such as channels, are kept.")
+            )
             await self.data.custom("MODLOGS").set({})
             await ctx.send(_("Starting conversion... This might take a long time."))
             total = await convert(content)
@@ -357,7 +340,7 @@ class SettingsMixin(MixinMeta):
         `{member.mention}` for a mention)
         - `{mod}`: The moderator that warned the member (you can also use keys like\
         `{moderator.id}`)
-        - `{duration}`: The duration of a timed mute/ban if it exists
+        - `{duration}`: The duration of a timed timeout/ban if it exists
         - `{time}`: The current date and time.
 
         __Examples:__
@@ -393,8 +376,11 @@ class SettingsMixin(MixinMeta):
             "embed_description_" + destination, str(level), value=description
         )
         await ctx.send(
-            _("The new description for {destination} (warn {level}) was successfully set!").format(
-                destination=_("modlog") if destination == "modlog" else _("user"), level=level
+            _(
+                "The new description for {destination} (warn {level}) was successfully set!"
+            ).format(
+                destination=_("modlog") if destination == "modlog" else _("user"),
+                level=level,
             )
         )
 
@@ -424,7 +410,9 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
             )
         elif enable:
             await self.data.guild(guild).log_manual.set(True)
-            await ctx.send(_("Done. The bot will now listen for manual actions and log them."))
+            await ctx.send(
+                _("Done. The bot will now listen for manual actions and log them.")
+            )
         else:
             await self.data.guild(guild).log_manual.set(False)
             await ctx.send(_("Done. The bot won't listen for manual actions anymore."))
@@ -469,168 +457,6 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
                 )
             )
 
-    @warnset.command(name="mute")
-    async def warnset_mute(self, ctx: commands.Context, *, role: discord.Role = None):
-        """
-        Create the role used for muting members.
-
-        You can specify a role when invoking the command to specify which role should be used.
-        If you don't specify a role, one will be created for you.
-        """
-        guild = ctx.guild
-        my_position = guild.me.top_role.position
-        if not role:
-            if not guild.me.guild_permissions.manage_roles:
-                await ctx.send(
-                    _("I can't manage roles, please give me this permission to continue.")
-                )
-                return
-            async with ctx.typing():
-                fails = await self.api.maybe_create_mute_role(guild)
-                my_position = guild.me.top_role.position
-                if fails is False:
-                    await ctx.send(
-                        _(
-                            "A mute role was already created! You can change it by specifying "
-                            "a role when typing the command.\n`[p]warnset mute <role name>`"
-                        )
-                    )
-                    return
-                else:
-                    if fails:
-                        errors = _(
-                            "\n\nSome errors occured when editing the channel permissions:\n"
-                        ) + "\n".join(fails)
-                    else:
-                        errors = ""
-                    text = (
-                        _(
-                            "The role `Muted` was successfully created at position {pos}. Feel "
-                            "free to drag it in the hierarchy and edit its permissions, as long "
-                            "as my top role is above and the members to mute are below."
-                        ).format(pos=my_position - 1)
-                        + errors
-                    )
-                    for page in pagify(text):
-                        await ctx.send(page)
-        elif role.position >= my_position:
-            await ctx.send(
-                _(
-                    "That role is higher than my top role in the hierarchy. "
-                    'Please move it below "{bot_role}".'
-                ).format(bot_role=guild.me.top_role.name)
-            )
-        else:
-            await self.cache.update_mute_role(guild, role)
-            await ctx.send(_("The new mute role was successfully set!"))
-
-    @warnset.command(name="refreshmuterole")
-    @commands.cooldown(1, 120, commands.BucketType.guild)
-    async def warnset_refreshmuterole(self, ctx: commands.Context):
-        """
-        Refresh the mute role's permissions in the server.
-
-        This will iterate all of your channels and make sure all permissions are correctly\
-configured for the mute role.
-
-        The muted role will be prevented from sending messages and adding reactions in all text\
-channels, and prevented from talking in all voice channels.
-        """
-        guild = ctx.guild
-        mute_role = await self.cache.get_mute_role(guild)
-        if mute_role is None:
-            await ctx.send(
-                _(
-                    "No mute role configured on this server. "
-                    "Create one with `{prefix}warnset mute`."
-                ).format(prefix=ctx.clean_prefix)
-            )
-            return
-        mute_role = guild.get_role(mute_role)
-        if not mute_role:
-            await ctx.send(
-                _(
-                    "It looks like the configured mute role was deleted. "
-                    "Create a new one with `{prefix}warnset mute`."
-                ).format(prefix=ctx.clean_prefix)
-            )
-            return
-        if not guild.me.guild_permissions.manage_channels:
-            await ctx.send(_("I need the `Manage channels` permission to continue."))
-            return
-        await ctx.send(
-            _("Now checking {len} channels, please wait...").format(len=len(guild.channels))
-        )
-        perms = discord.PermissionOverwrite(send_messages=False, add_reactions=False, speak=False)
-        reason = _("WarnSystem mute role permissions refresh")
-        perms_failed = []  # if it failed because of Forbidden, add to this list
-        other_failed = []  # if it failed because of HTTPException, add to this one
-        count = 0
-        category: discord.CategoryChannel
-        async with ctx.typing():
-            for channel in guild.channels:  # include categories, text and voice channels
-                # we check if the perms are correct, to prevent useless API calls
-                overwrites = channel.overwrites_for(mute_role)
-                if (
-                    isinstance(channel, discord.TextChannel)
-                    and overwrites.send_messages is False
-                    and overwrites.add_reactions is False
-                ):
-                    continue
-                elif isinstance(channel, discord.VoiceChannel) and overwrites.speak is False:
-                    continue
-                elif overwrites == perms:
-                    continue
-                count += 1
-                try:
-                    log.debug(
-                        f"[Guild {guild.id}] Editing channel {channel.name} for "
-                        "mute role permissions refresh."
-                    )
-                    await channel.set_permissions(target=mute_role, overwrite=perms, reason=reason)
-                except discord.errors.Forbidden:
-                    perms_failed.append(channel)
-                except discord.errors.HTTPException as e:
-                    log.error(
-                        f"[Guild {guild.id}] Failed to edit channel {channel.name} "
-                        f"({channel.id}) while refreshing the mute role's permissions.",
-                        exc_info=e,
-                    )
-                    other_failed.append(channel)
-        if not perms_failed and not other_failed:
-            await ctx.send(
-                _("Successfully checked all channels, {len} were edited.").format(len=count)
-            )
-            return
-
-        def format_channels(channels: list):
-            text = ""
-            for channel in sorted(channels, key=lambda x: x.position):
-                if isinstance(channel, discord.TextChannel):
-                    text += f"- Text channel: {channel.mention}"
-                elif isinstance(channel, discord.VoiceChannel):
-                    text += f"- Voice channel: {channel.name}"
-                else:
-                    text += f"- Category: {channel.name}"
-            return text
-
-        text = _("Successfully checked all channels, {len}/{total} were edited.\n\n").format(
-            len=count - len(perms_failed) - len(other_failed), total=count
-        )
-        if perms_failed:
-            text += _(
-                "The following channels were not updated due to a permission failure, "
-                "probably enforced `Manage channels` permission:\n{channels}\n"
-            ).format(channels=format_channels(perms_failed))
-        if other_failed:
-            text += _(
-                "The following channels were not updated due to an unknown error "
-                "(check your logs or ask the bot administrator):\n{channels}\n"
-            ).format(channels=format_channels(other_failed))
-        text += _("You can fix these issues and run the command once again.")
-        for page in pagify(text):
-            await ctx.send(page)
-
     @warnset.command(name="reinvite")
     async def warnset_reinvite(self, ctx: commands.Context, enable: bool = None):
         """
@@ -648,7 +474,9 @@ channels, and prevented from talking in all voice channels.
                 _(
                     "The bot {respect} reinvite unbanned members. If you want to "
                     "change this, type `[p]warnset reinvite {opposite}`."
-                ).format(respect=_("does") if current else _("doesn't"), opposite=not current)
+                ).format(
+                    respect=_("does") if current else _("doesn't"), opposite=not current
+                )
             )
         elif enable:
             await self.data.guild(guild).reinvite.set(True)
@@ -662,40 +490,6 @@ channels, and prevented from talking in all voice channels.
         else:
             await self.data.guild(guild).reinvite.set(False)
             await ctx.send(_("Done. The bot will no longer reinvite unbanned members."))
-
-    @warnset.command("removeroles")
-    async def warnset_removeroles(self, ctx: commands.Context, enable: bool = None):
-        """
-        Defines if the bot should remove all roles on mute
-
-        If enabled, when you set a level 2 warning on a member, they will be assigned the mute role\
-        as usual, but all of their other roles will also be removed.
-        Once the mute ends, the member will get their roles back.
-        This can be useful for role permissions issues.
-        """
-        guild = ctx.guild
-        current = await self.data.guild(guild).remove_roles()
-        if enable is None:
-            await ctx.send(
-                _(
-                    "The bot currently {remove} all roles on mute. If you want to change this, "
-                    "type `[p]warnset removeroles {opposite}`."
-                ).format(
-                    remove=_("removes") if current else _("doesn't remove"), opposite=not current
-                )
-            )
-        elif enable:
-            await self.data.guild(guild).remove_roles.set(True)
-            await ctx.send(
-                _(
-                    "Done. All roles will be removed from muted members. They will get their "
-                    "roles back once the mute ends or when someone removes the warning using the "
-                    "`{prefix}warnings` command."
-                ).format(prefix=ctx.prefix)
-            )
-        else:
-            await self.data.guild(guild).remove_roles.set(False)
-            await ctx.send(_("Done. Muted members will keep their roles on mute."))
 
     @warnset.command(name="settings")
     async def warnset_settings(self, ctx: commands.Context):
@@ -716,23 +510,23 @@ channels, and prevented from talking in all voice channels.
                 if not channel:
                     if key != "main":
                         continue
-                    channel = _("Not set. Use `{prefix}warnset channel`").format(prefix=ctx.prefix)
+                    channel = _("Not set. Use `{prefix}warnset channel`").format(
+                        prefix=ctx.prefix
+                    )
                 else:
                     channel = guild.get_channel(channel)
                     channel = channel.mention if channel else _("Not found")
                 if key == "main":
-                    channels += _("Default channel: {channel}\n").format(channel=channel)
+                    channels += _("Default channel: {channel}\n").format(
+                        channel=channel
+                    )
                 else:
                     channels += _("Level {level} warnings channel: {channel}\n").format(
                         channel=channel, level=key
                     )
-            mute_role = guild.get_role(all_data["mute_role"])
-            mute_role = _("No mute role set.") if not mute_role else mute_role.name
             hierarchy = _("Enabled") if all_data["respect_hierarchy"] else _("Disabled")
             reinvite = _("Enabled") if all_data["reinvite"] else _("Disabled")
             show_mod = _("Enabled") if all_data["show_mod"] else _("Disabled")
-            update_mute = _("Enabled") if all_data["update_mute"] else _("Disabled")
-            remove_roles = _("Enabled") if all_data["remove_roles"] else _("Disabled")
             manual_bans = _("Enabled") if all_data["log_manual"] else _("Disabled")
             bandays = _("Softban: {softban}\nBan: {ban}").format(
                 softban=all_data["bandays"]["softban"], ban=all_data["bandays"]["ban"]
@@ -795,19 +589,18 @@ channels, and prevented from talking in all voice channels.
                 embed.set_footer(text=_("Cog made with ❤️ by Laggron"))
                 embed.colour = color
             embeds[0].add_field(name=_("Log channels"), value=channels)
-            embeds[0].add_field(name=_("Mute role"), value=mute_role)
             embeds[0].add_field(name=_("Respect hierarchy"), value=hierarchy)
             embeds[0].add_field(name=_("Reinvite unbanned members"), value=reinvite)
             embeds[0].add_field(name=_("Show responsible moderator"), value=show_mod)
             embeds[0].add_field(name=_("Detect manual actions"), value=manual_bans)
-            embeds[0].add_field(name=_("Update new channels for mute role"), value=update_mute)
-            embeds[0].add_field(name=_("Remove roles on mute"), value=remove_roles)
             embeds[0].add_field(name=_("Days of messages to delete"), value=bandays)
             embeds[0].add_field(name=_("Substitutions"), value=substitutions)
             embeds[1].add_field(name=_("Embed thumbnails"), value=embed_thumbnails)
             embeds[1].add_field(name=_("Embed colors"), value=embed_colors)
             embeds[1].add_field(
-                name=_("Modlog embed descriptions"), value=modlog_descriptions, inline=False
+                name=_("Modlog embed descriptions"),
+                value=modlog_descriptions,
+                inline=False,
             )
             embeds[1].add_field(
                 name=_("User embed descriptions"), value=user_descriptions, inline=False
@@ -821,7 +614,9 @@ channels, and prevented from talking in all voice channels.
                 inline=False,
             )
         try:
-            await menus.menu(ctx=ctx, pages=embeds, controls=menus.DEFAULT_CONTROLS, timeout=90)
+            await menus.menu(
+                ctx=ctx, pages=embeds, controls=menus.DEFAULT_CONTROLS, timeout=90
+            )
         except discord.errors.HTTPException as e:
             log.error("Couldn't make embed for displaying settings.", exc_info=e)
             await ctx.send(
@@ -847,7 +642,9 @@ channels, and prevented from talking in all voice channels.
                 _(
                     "The bot {respect} show the responsible moderator to the warned member in DM. "
                     "If you want to change this, type `[p]warnset showmod {opposite}`."
-                ).format(respect=_("does") if current else _("doesn't"), opposite=not current)
+                ).format(
+                    respect=_("does") if current else _("doesn't"), opposite=not current
+                )
             )
         elif enable:
             await self.data.guild(guild).show_mod.set(True)
@@ -859,7 +656,9 @@ channels, and prevented from talking in all voice channels.
             )
         else:
             await self.data.guild(guild).show_mod.set(False)
-            await ctx.send(_("Done. The bot will no longer show the responsible moderator."))
+            await ctx.send(
+                _("Done. The bot will no longer show the responsible moderator.")
+            )
 
     @warnset.group(name="substitutions")
     async def warnset_substitutions(self, ctx: commands.Context):
@@ -877,7 +676,9 @@ channels, and prevented from talking in all voice channels.
         pass
 
     @warnset_substitutions.command(name="add")
-    async def warnset_substitutions_add(self, ctx: commands.Context, name: str, *, text: str):
+    async def warnset_substitutions_add(
+        self, ctx: commands.Context, name: str, *, text: str
+    ):
         """
         Create a new subsitution.
 
@@ -899,7 +700,9 @@ channels, and prevented from talking in all voice channels.
                 )
                 return
             if len(text) > 600:
-                await ctx.send(_("That substitution is too long! Maximum is 600 characters!"))
+                await ctx.send(
+                    _("That substitution is too long! Maximum is 600 characters!")
+                )
                 return
             substitutions[name] = text
         await ctx.send(
@@ -959,7 +762,9 @@ channels, and prevented from talking in all voice channels.
             )
 
     @warnset.command(name="thumbnail")
-    async def warnset_thumbnail(self, ctx: commands.Context, level: int, url: str = None):
+    async def warnset_thumbnail(
+        self, ctx: commands.Context, level: int, url: str = None
+    ):
         """
         Edit the image displayed on the embeds.
 
@@ -973,7 +778,7 @@ channels, and prevented from talking in all voice channels.
             return
         await self.data.guild(guild).thumbnails.set_raw(str(level), value=url)
         await ctx.send(
-            _("The new image for level {level} warnings has been set to {image}.").format(
-                level=level, image=url
-            )
+            _(
+                "The new image for level {level} warnings has been set to {image}."
+            ).format(level=level, image=url)
         )
