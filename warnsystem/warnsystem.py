@@ -194,6 +194,8 @@ class WarnSystem(
             await ctx.send(e)
         except errors.SuicidePrevention as e:
             await ctx.send(e)
+        except errors.BadArgument as e:
+            await ctx.send(e)
         except errors.NotFound:
             await ctx.send(
                 _(
