@@ -1047,10 +1047,6 @@ class WarnSystem(
                         duration=self.api._format_timedelta(duration),
                         raw=modlog["duration"],
                     )
-                if modlog["roles"]:
-                    text += "Roles:     {roles}\n".format(
-                        roles=", ".join(modlog["roles"])
-                    )
             file = BytesIO()
             file.write(text.encode("utf-8"))
             files[guild_id] = file

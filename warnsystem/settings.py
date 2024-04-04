@@ -216,7 +216,6 @@ class SettingsMixin(MixinMeta):
                             "reason": case["reason"],
                             "time": timestamp,
                             "duration": None,
-                            "roles": [],
                         }
                     )
                     total_cases += 1
