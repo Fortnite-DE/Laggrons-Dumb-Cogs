@@ -922,7 +922,7 @@ class API:
             The bot is trying to take actions on someone but their top role is higher
             than the bot's top role in the guild's hierarchy.
         ~warnsystem.errors.MissingPermissions
-            The bot lacks a permissions to do something. Can be adding role, kicking
+            The bot lacks a permissions to do something. Can be timeouting, kicking
             or banning members.
         discord.errors.NotFound
             When the user ID provided for hackban isn't recognized by Discord.
