@@ -347,7 +347,6 @@ class API:
                         "level"     : int,  # between 1 and 5, the warning level
                         "author"    : Union[discord.Member, str],  # the member that warned the user
                         "reason"    : Optional[str],  # the reason of the warn, can be None
-                        "reason"    : Optional[str],  # the reason of the warn, can be None
                         "time"      : datetime.datetime,  # the date when the warn was set
                     },
                     {
