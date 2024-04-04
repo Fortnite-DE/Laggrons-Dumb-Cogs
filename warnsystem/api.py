@@ -347,6 +347,7 @@ class API:
                         "level"     : int,  # between 1 and 5, the warning level
                         "author"    : Union[discord.Member, str],  # the member that warned the user
                         "reason"    : Optional[str],  # the reason of the warn, can be None
+                        "reason"    : Optional[str],  # the reason of the warn, can be None
                         "time"      : datetime.datetime,  # the date when the warn was set
                     },
                     {
@@ -954,7 +955,7 @@ class API:
                 return errors.MissingPermissions(
                     _("I can't take actions on the owner of the guild.")
                 )
-            if level == 2 and not time or time > timedelta(days=28):
+            if level == 2 and (not time or time > timedelta(days=28)):
                 return errors.BadArgument(
                     _("Timeouts require a time to be set up to 28 days maximum.")
                 )
