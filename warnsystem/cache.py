@@ -45,9 +45,7 @@ class MemoryCache:
         """
         config_data = await self.data.all_guilds()
         guild_temp_actions_cached = len(self.temp_actions)
-        guild_temp_actions = len(
-            [x for x in config_data.values() if x["temporary_warns"]]
-        )
+        guild_temp_actions = len([x for x in config_data.values() if x["temporary_warns"]])
         temp_actions_cached = sum(len(x) for x in self.temp_actions.values())
         temp_actions = sum((len(x["temporary_warns"]) for x in config_data.values()))
         text = (
@@ -58,9 +56,7 @@ class MemoryCache:
         log.info(text)
         return text
 
-    async def get_temp_action(
-            self, guild: discord.Guild, member: Optional[discord.Member] = None
-    ):
+    async def get_temp_action(self, guild: discord.Guild, member: Optional[discord.Member] = None):
         guild_temp_actions = self.temp_actions.get(guild.id, {})
         if not guild_temp_actions:
             guild_temp_actions = await self.data.guild(guild).temporary_warns.all()
@@ -70,9 +66,7 @@ class MemoryCache:
             return guild_temp_actions
         return guild_temp_actions.get(member.id)
 
-    async def add_temp_action(
-            self, guild: discord.Guild, member: discord.Member, data: dict
-    ):
+    async def add_temp_action(self, guild: discord.Guild, member: discord.Member, data: dict):
         await self.data.guild(guild).temporary_warns.set_raw(member.id, value=data)
         try:
             guild_temp_actions = self.temp_actions[guild.id]
@@ -135,13 +129,13 @@ class MemoryCache:
         return automod_regex
 
     async def add_automod_regex(
-            self,
-            guild: discord.Guild,
-            name: str,
-            regex: re.Pattern,
-            level: int,
-            time: int,
-            reason: str,
+        self,
+        guild: discord.Guild,
+        name: str,
+        regex: re.Pattern,
+        level: int,
+        time: int,
+        reason: str,
     ):
         data = {"regex": regex.pattern, "level": level, "time": time, "reason": reason}
         await self.data.guild(guild).automod.regex.set_raw(name, value=data)

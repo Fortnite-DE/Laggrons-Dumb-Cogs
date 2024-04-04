@@ -70,11 +70,7 @@ class SettingsMixin(MixinMeta):
             )
             return
         if not 0 <= days <= 7:
-            is_ban = (
-                _("You can set 0 to disable messages deletion.")
-                if ban_type == "ban"
-                else ""
-            )
+            is_ban = _("You can set 0 to disable messages deletion.") if ban_type == "ban" else ""
             await ctx.send(
                 _(
                     "The number of days of messages to delete must be between "
@@ -99,7 +95,7 @@ class SettingsMixin(MixinMeta):
 
     @warnset.command(name="channel")
     async def warnset_channel(
-            self, ctx: commands.Context, channel: discord.TextChannel, level: int = None
+        self, ctx: commands.Context, channel: discord.TextChannel, level: int = None
     ):
         """
         Set the channel for the WarnSystem modlog.
@@ -114,13 +110,9 @@ class SettingsMixin(MixinMeta):
         """
         guild = ctx.guild
         if not channel.permissions_for(guild.me).send_messages:
-            await ctx.send(
-                _("I don't have the permission to send messages in that channel.")
-            )
+            await ctx.send(_("I don't have the permission to send messages in that channel."))
         elif not channel.permissions_for(guild.me).embed_links:
-            await ctx.send(
-                _("I don't have the permissions to send embed links in that channel.")
-            )
+            await ctx.send(_("I don't have the permissions to send embed links in that channel."))
         else:
             if not level:
                 await self.data.guild(guild).channels.main.set(channel.id)
@@ -148,9 +140,7 @@ class SettingsMixin(MixinMeta):
                 )
 
     @warnset.command("color")
-    async def warnset_color(
-            self, ctx: commands.Context, level: int, color: discord.Color
-    ):
+    async def warnset_color(self, ctx: commands.Context, level: int, color: discord.Color):
         """
         Edit the color of the embed.
 
@@ -203,12 +193,8 @@ class SettingsMixin(MixinMeta):
             for member, logs in data.items():
                 cases = []
                 for case in [y for x, y in logs.items() if x.startswith("case")]:
-                    level = {"Simple": 1, "Kick": 3, "Softban": 4, "Ban": 5}.get(
-                        case["level"], 1
-                    )
-                    timestamp = datetime.strptime(
-                        case["timestamp"], "%d %b %Y %H:%M"
-                    ).timestamp()
+                    level = {"Simple": 1, "Kick": 3, "Softban": 4, "Ban": 5}.get(case["level"], 1)
+                    timestamp = datetime.strptime(case["timestamp"], "%d %b %Y %H:%M").timestamp()
                     cases.append(
                         {
                             "level": level,
@@ -219,9 +205,7 @@ class SettingsMixin(MixinMeta):
                         }
                     )
                     total_cases += 1
-                async with self.data.custom(
-                        "MODLOGS", guild.id, int(member)
-                ).x() as logs:
+                async with self.data.custom("MODLOGS", guild.id, int(member)).x() as logs:
                     logs.extend(cases)
             return total_cases
 
@@ -300,9 +284,7 @@ class SettingsMixin(MixinMeta):
             await ctx.send(_("Starting conversion... This might take a long time."))
             total = await convert(content)
         elif pred.result == 1:
-            await ctx.send(
-                _("Deleting server logs... Settings, such as channels, are kept.")
-            )
+            await ctx.send(_("Deleting server logs... Settings, such as channels, are kept."))
             await self.data.custom("MODLOGS").set({})
             await ctx.send(_("Starting conversion... This might take a long time."))
             total = await convert(content)
@@ -322,7 +304,7 @@ class SettingsMixin(MixinMeta):
 
     @warnset.command(name="description")
     async def warnset_description(
-            self, ctx: commands.Context, level: int, destination: str, *, description: str
+        self, ctx: commands.Context, level: int, destination: str, *, description: str
     ):
         """
         Set a custom description for the modlog embeds.
@@ -375,9 +357,7 @@ class SettingsMixin(MixinMeta):
             "embed_description_" + destination, str(level), value=description
         )
         await ctx.send(
-            _(
-                "The new description for {destination} (warn {level}) was successfully set!"
-            ).format(
+            _("The new description for {destination} (warn {level}) was successfully set!").format(
                 destination=_("modlog") if destination == "modlog" else _("user"),
                 level=level,
             )
@@ -409,9 +389,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
             )
         elif enable:
             await self.data.guild(guild).log_manual.set(True)
-            await ctx.send(
-                _("Done. The bot will now listen for manual actions and log them.")
-            )
+            await ctx.send(_("Done. The bot will now listen for manual actions and log them."))
         else:
             await self.data.guild(guild).log_manual.set(False)
             await ctx.send(_("Done. The bot won't listen for manual actions anymore."))
@@ -473,9 +451,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
                 _(
                     "The bot {respect} reinvite unbanned members. If you want to "
                     "change this, type `[p]warnset reinvite {opposite}`."
-                ).format(
-                    respect=_("does") if current else _("doesn't"), opposite=not current
-                )
+                ).format(respect=_("does") if current else _("doesn't"), opposite=not current)
             )
         elif enable:
             await self.data.guild(guild).reinvite.set(True)
@@ -509,16 +485,12 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
                 if not channel:
                     if key != "main":
                         continue
-                    channel = _("Not set. Use `{prefix}warnset channel`").format(
-                        prefix=ctx.prefix
-                    )
+                    channel = _("Not set. Use `{prefix}warnset channel`").format(prefix=ctx.prefix)
                 else:
                     channel = guild.get_channel(channel)
                     channel = channel.mention if channel else _("Not found")
                 if key == "main":
-                    channels += _("Default channel: {channel}\n").format(
-                        channel=channel
-                    )
+                    channels += _("Default channel: {channel}\n").format(channel=channel)
                 else:
                     channels += _("Level {level} warnings channel: {channel}\n").format(
                         channel=channel, level=key
@@ -613,9 +585,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
                 inline=False,
             )
         try:
-            await menus.menu(
-                ctx=ctx, pages=embeds, controls=menus.DEFAULT_CONTROLS, timeout=90
-            )
+            await menus.menu(ctx=ctx, pages=embeds, controls=menus.DEFAULT_CONTROLS, timeout=90)
         except discord.errors.HTTPException as e:
             log.error("Couldn't make embed for displaying settings.", exc_info=e)
             await ctx.send(
@@ -641,9 +611,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
                 _(
                     "The bot {respect} show the responsible moderator to the warned member in DM. "
                     "If you want to change this, type `[p]warnset showmod {opposite}`."
-                ).format(
-                    respect=_("does") if current else _("doesn't"), opposite=not current
-                )
+                ).format(respect=_("does") if current else _("doesn't"), opposite=not current)
             )
         elif enable:
             await self.data.guild(guild).show_mod.set(True)
@@ -655,9 +623,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
             )
         else:
             await self.data.guild(guild).show_mod.set(False)
-            await ctx.send(
-                _("Done. The bot will no longer show the responsible moderator.")
-            )
+            await ctx.send(_("Done. The bot will no longer show the responsible moderator."))
 
     @warnset.group(name="substitutions")
     async def warnset_substitutions(self, ctx: commands.Context):
@@ -675,9 +641,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
         pass
 
     @warnset_substitutions.command(name="add")
-    async def warnset_substitutions_add(
-            self, ctx: commands.Context, name: str, *, text: str
-    ):
+    async def warnset_substitutions_add(self, ctx: commands.Context, name: str, *, text: str):
         """
         Create a new subsitution.
 
@@ -699,9 +663,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
                 )
                 return
             if len(text) > 600:
-                await ctx.send(
-                    _("That substitution is too long! Maximum is 600 characters!")
-                )
+                await ctx.send(_("That substitution is too long! Maximum is 600 characters!"))
                 return
             substitutions[name] = text
         await ctx.send(
@@ -761,9 +723,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
             )
 
     @warnset.command(name="thumbnail")
-    async def warnset_thumbnail(
-            self, ctx: commands.Context, level: int, url: str = None
-    ):
+    async def warnset_thumbnail(self, ctx: commands.Context, level: int, url: str = None):
         """
         Edit the image displayed on the embeds.
 
@@ -777,7 +737,7 @@ save it, as if it was performed with WarnSystem. **However, the member will not 
             return
         await self.data.guild(guild).thumbnails.set_raw(str(level), value=url)
         await ctx.send(
-            _(
-                "The new image for level {level} warnings has been set to {image}."
-            ).format(level=level, image=url)
+            _("The new image for level {level} warnings has been set to {image}.").format(
+                level=level, image=url
+            )
         )

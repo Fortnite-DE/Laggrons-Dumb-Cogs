@@ -46,9 +46,7 @@ class CompositeMetaClass(type(commands.Cog), type(ABC)):
 
 
 @cog_i18n(_)
-class WarnSystem(
-    SettingsMixin, AutomodMixin, commands.Cog, metaclass=CompositeMetaClass
-):
+class WarnSystem(SettingsMixin, AutomodMixin, commands.Cog, metaclass=CompositeMetaClass):
     """
     An alternative to the Red core moderation system, providing a different system of moderation\
     similar to Dyno.
@@ -153,13 +151,13 @@ class WarnSystem(
 
     # helpers
     async def call_warn(
-            self,
-            ctx: commands.Context,
-            level: int,
-            member: discord.Member,
-            reason: Optional[str] = None,
-            time: Optional[timedelta] = None,
-            ban_days: Optional[int] = None,
+        self,
+        ctx: commands.Context,
+        level: int,
+        member: discord.Member,
+        reason: Optional[str] = None,
+        time: Optional[timedelta] = None,
+        ban_days: Optional[int] = None,
     ):
         """No need to repeat, let's do what's common to all 5 warnings."""
         reason = await self.api.format_reason(ctx.guild, reason)
@@ -219,17 +217,17 @@ class WarnSystem(
                 await ctx.send(_("Done."))
 
     async def call_masswarn(
-            self,
-            ctx: commands.Context,
-            level: int,
-            members: list[discord.Member],
-            unavailable_members: list[UnavailableMember],
-            log_modlog: bool,
-            log_dm: bool,
-            take_action: bool,
-            reason: Optional[str] = None,
-            time: Optional[timedelta] = None,
-            confirm: bool = False,
+        self,
+        ctx: commands.Context,
+        level: int,
+        members: list[discord.Member],
+        unavailable_members: list[UnavailableMember],
+        log_modlog: bool,
+        log_dm: bool,
+        take_action: bool,
+        reason: Optional[str] = None,
+        time: Optional[timedelta] = None,
+        confirm: bool = False,
     ):
         guild = ctx.guild
         message = None
@@ -278,9 +276,7 @@ class WarnSystem(
                 await asyncio.sleep(5)
 
         if unavailable_members and level < 5:
-            await ctx.send(
-                _("You can only use `--hackban-select` with a level 5 warn.")
-            )
+            await ctx.send(_("You can only use `--hackban-select` with a level 5 warn."))
             return
         reason = await self.api.format_reason(ctx.guild, reason)
         if (log_modlog or log_dm) and reason and len(reason) > 2000:  # embed limits
@@ -344,9 +340,7 @@ class WarnSystem(
                 ),
                 file=file,
             )
-            menus.start_adding_reactions(
-                msg, predicates.ReactionPredicate.YES_OR_NO_EMOJIS
-            )
+            menus.start_adding_reactions(msg, predicates.ReactionPredicate.YES_OR_NO_EMOJIS)
             pred = predicates.ReactionPredicate.yes_or_no(msg, ctx.author)
             try:
                 await self.bot.wait_for("reaction_add", check=pred, timeout=120)
@@ -393,9 +387,7 @@ class WarnSystem(
             if not confirm:
                 if fails:
                     await ctx.send(
-                        _(
-                            "Done! {failed} {members} out of {total} couldn't be warned."
-                        ).format(
+                        _("Done! {failed} {members} out of {total} couldn't be warned.").format(
                             failed=len(fails),
                             members=_("members") if len(fails) > 1 else _("member"),
                             total=total_members,
@@ -423,9 +415,7 @@ class WarnSystem(
     @commands.group(invoke_without_command=True, name="warn")
     @checks.mod_or_permissions(administrator=True)
     @commands.guild_only()
-    async def _warn(
-            self, ctx: commands.Context, member: discord.Member, *, reason: str = None
-    ):
+    async def _warn(self, ctx: commands.Context, member: discord.Member, *, reason: str = None):
         """
         Take actions against a user and log it.
         The warned user will receive a DM.
@@ -436,9 +426,7 @@ class WarnSystem(
 
     @_warn.command(name="1", aliases=["simple"])
     @checks.mod_or_permissions(administrator=True)
-    async def warn_1(
-            self, ctx: commands.Context, member: discord.Member, *, reason: str = None
-    ):
+    async def warn_1(self, ctx: commands.Context, member: discord.Member, *, reason: str = None):
         """
         Set a simple warning on a user.
 
@@ -449,12 +437,12 @@ class WarnSystem(
     @_warn.command(name="2", aliases=["mute", "timeout"])
     @checks.mod_or_permissions(administrator=True)
     async def warn_2(
-            self,
-            ctx: commands.Context,
-            member: discord.Member,
-            time: TimedeltaConverter,
-            *,
-            reason: Optional[str] = None,
+        self,
+        ctx: commands.Context,
+        member: discord.Member,
+        time: TimedeltaConverter,
+        *,
+        reason: Optional[str] = None,
     ):
         """
         Timeout the user in all channels, including voice channels.
@@ -470,11 +458,11 @@ class WarnSystem(
     @_warn.command(name="3", aliases=["kick"])
     @checks.mod_or_permissions(administrator=True)
     async def warn_3(
-            self,
-            ctx: commands.Context,
-            member: discord.Member,
-            *,
-            reason: Optional[str] = None,
+        self,
+        ctx: commands.Context,
+        member: discord.Member,
+        *,
+        reason: Optional[str] = None,
     ):
         """
         Kick the member from the server.
@@ -484,11 +472,11 @@ class WarnSystem(
     @_warn.command(name="4", aliases=["softban"])
     @checks.mod_or_permissions(administrator=True)
     async def warn_4(
-            self,
-            ctx: commands.Context,
-            member: discord.Member,
-            *,
-            reason: Optional[str] = None,
+        self,
+        ctx: commands.Context,
+        member: discord.Member,
+        *,
+        reason: Optional[str] = None,
     ):
         """
         Softban the member from the server.
@@ -504,12 +492,12 @@ class WarnSystem(
     @_warn.command(name="5", aliases=["ban"], usage="<member> [time] <reason>")
     @checks.mod_or_permissions(administrator=True)
     async def warn_5(
-            self,
-            ctx: commands.Context,
-            member: UnavailableMember,
-            time: Optional[TimedeltaConverter],
-            *,
-            reason: Optional[str] = None,
+        self,
+        ctx: commands.Context,
+        member: UnavailableMember,
+        time: Optional[TimedeltaConverter],
+        *,
+        reason: Optional[str] = None,
     ):
         """
         Ban the member from the server.
@@ -715,10 +703,10 @@ class WarnSystem(
     @commands.guild_only()
     @commands.cooldown(1, 3, commands.BucketType.member)
     async def warnings(
-            self,
-            ctx: commands.Context,
-            user: Optional[UnavailableMember] = None,
-            index: int = 0,
+        self,
+        ctx: commands.Context,
+        user: Optional[UnavailableMember] = None,
+        index: int = 0,
     ):
         """
         Shows all warnings of a member.
@@ -730,11 +718,11 @@ class WarnSystem(
             await ctx.send_help()
             return
         if (
-                not (
-                        await mod.is_mod_or_superior(self.bot, ctx.author)
-                        or ctx.author.guild_permissions.kick_members
-                )
-                and user != ctx.author
+            not (
+                await mod.is_mod_or_superior(self.bot, ctx.author)
+                or ctx.author.guild_permissions.kick_members
+            )
+            and user != ctx.author
         ):
             await ctx.send(_("You are not allowed to see other's warnings!"))
             return
@@ -804,10 +792,7 @@ class WarnSystem(
             text += "\n\n"
             full_text = text + full_text
         pages = [
-            x
-            for x in pagify(
-                full_text, delims=["\n\n", "\n"], priority=True, page_length=1900
-            )
+            x for x in pagify(full_text, delims=["\n\n", "\n"], priority=True, page_length=1900)
         ]
         total_pages = len(pages)
         total_warns = len(warns)
@@ -818,9 +803,7 @@ class WarnSystem(
             )
             for i, x in enumerate(pages, start=1)
         ]
-        await menus.menu(
-            ctx=ctx, pages=pages, controls=menus.DEFAULT_CONTROLS, timeout=60
-        )
+        await menus.menu(ctx=ctx, pages=pages, controls=menus.DEFAULT_CONTROLS, timeout=60)
 
     @commands.command()
     @commands.bot_has_permissions(ban_members=True)
@@ -841,9 +824,7 @@ class WarnSystem(
         try:
             await guild.unban(member)
         except discord.errors.HTTPException as e:
-            await ctx.send(
-                _("Failed to unban the given member. Check your logs for details.")
-            )
+            await ctx.send(_("Failed to unban the given member. Check your logs for details."))
             log.error(
                 f"Can't unban user {member.id} from guild {guild} ({guild.id})",
                 exc_info=e,
@@ -877,9 +858,7 @@ class WarnSystem(
         # if a member gets unbanned, we check if they were temp banned with warnsystem
         # if it was, we remove the case so it won't unban them a second time
         warns = await self.cache.get_temp_action(guild)
-        to_remove = (
-            []
-        )  # there can be multiple temp bans, let's not question the moderators
+        to_remove = []  # there can be multiple temp bans, let's not question the moderators
         for member, data in warns.items():
             if data["level"] == 2 or int(member) != user.id:
                 continue
@@ -899,9 +878,7 @@ class WarnSystem(
     async def on_member_remove(self, member: discord.Member):
         await self.on_manual_action(member.guild, member, 3)
 
-    async def on_manual_action(
-            self, guild: discord.Guild, member: discord.Member, level: int
-    ):
+    async def on_manual_action(self, guild: discord.Guild, member: discord.Member, level: int):
         # most of this code is from Cog-Creators, modlog cog
         # https://github.com/Cog-Creators/Red-DiscordBot/blob/bc21f779762ec9f460aecae525fdcd634f6c2d85/redbot/core/modlog.py#L68
         if not guild.me.guild_permissions.view_audit_log:
@@ -916,9 +893,7 @@ class WarnSystem(
         when = datetime.now(timezone.utc)
         before = when + timedelta(minutes=1)
         after = when - timedelta(minutes=1)
-        await asyncio.sleep(
-            10
-        )  # prevent small delays from causing a 5 minute delay on entry
+        await asyncio.sleep(10)  # prevent small delays from causing a 5 minute delay on entry
         attempts = 0
         action = {
             3: discord.AuditLogAction.kick,
@@ -928,13 +903,8 @@ class WarnSystem(
         while attempts < 3:
             attempts += 1
             try:
-                async for entry in guild.audit_logs(
-                        action=action, before=before, after=after
-                ):
-                    if (
-                            entry.target.id == member.id
-                            and after < entry.created_at < before
-                    ):
+                async for entry in guild.audit_logs(action=action, before=before, after=after):
+                    if entry.target.id == member.id and after < entry.created_at < before:
                         break
                 else:
                     break
@@ -948,9 +918,7 @@ class WarnSystem(
                         # Don't create modlog entires for the bot's own bans, cogs do this.
                         mod, reason, date = entry.user, entry.reason, entry.created_at
                         if isinstance(member, discord.User):
-                            member = UnavailableMember(
-                                self.bot, guild._state, member.id
-                            )
+                            member = UnavailableMember(self.bot, guild._state, member.id)
                         try:
                             await self.api.warn(
                                 guild,
@@ -1013,9 +981,7 @@ class WarnSystem(
                     "\n\n\n--- Case {number} ---\nLevel:     {level}\nReason:    {reason}\n"
                 ).format(number=i + 1, **modlog)
                 text += "Date:      {date}\n".format(
-                    date=self.api._format_datetime(
-                        self.api._get_datetime(modlog["time"])
-                    )
+                    date=self.api._format_datetime(self.api._get_datetime(modlog["time"]))
                 )
                 if modlog["duration"]:
                     duration = self.api._get_timedelta(modlog["duration"])
@@ -1057,9 +1023,7 @@ class WarnSystem(
 
     async def red_delete_data_for_user(self, *, requester: str, user_id: int):
         try:
-            result = await self._red_delete_data_for_user(
-                requester=requester, user_id=user_id
-            )
+            result = await self._red_delete_data_for_user(requester=requester, user_id=user_id)
         except Exception as e:
             log.error(
                 f"User {user_id} has requested end user data deletion but an exception occured!",

@@ -244,22 +244,22 @@ class API:
         return True
 
     async def _create_case(
-            self,
-            guild: discord.Guild,
-            user: discord.User,
-            author: Union[discord.Member, str],
-            level: int,
-            time: datetime,
-            reason: Optional[str] = None,
-            duration: Optional[timedelta] = None,
-            modlog_message: Optional[discord.Message] = None,
+        self,
+        guild: discord.Guild,
+        user: discord.User,
+        author: Union[discord.Member, str],
+        level: int,
+        time: datetime,
+        reason: Optional[str] = None,
+        duration: Optional[timedelta] = None,
+        modlog_message: Optional[discord.Message] = None,
     ) -> dict:
         """Create a new case for a member. Don't call this, call warn instead."""
         data = {
             "level": level,
-            "author": author
-            if not isinstance(author, (discord.User, discord.Member))
-            else author.id,
+            "author": (
+                author if not isinstance(author, (discord.User, discord.Member)) else author.id
+            ),
             "reason": reason,
             "time": int(time.timestamp()),  # seconds since epoch
             "duration": None if not duration else duration.total_seconds(),
@@ -274,7 +274,7 @@ class API:
         return data
 
     async def get_case(
-            self, guild: discord.Guild, user: Union[discord.User, discord.Member], index: int
+        self, guild: discord.Guild, user: Union[discord.User, discord.Member], index: int
     ) -> dict:
         """
         Get a specific case for a user.
@@ -319,7 +319,7 @@ class API:
             return case
 
     async def get_all_cases(
-            self, guild: discord.Guild, user: Optional[Union[discord.User, discord.Member]] = None
+        self, guild: discord.Guild, user: Optional[Union[discord.User, discord.Member]] = None
     ) -> list:
         """
         Get all cases for a member of a guild.
@@ -392,11 +392,11 @@ class API:
         return sorted(all_cases, key=lambda x: x["time"])  # sorted from oldest to newest
 
     async def edit_case(
-            self,
-            guild: discord.Guild,
-            user: Union[discord.User, discord.Member],
-            index: int,
-            new_reason: str,
+        self,
+        guild: discord.Guild,
+        user: Union[discord.User, discord.Member],
+        index: int,
+        new_reason: str,
     ) -> bool:
         """
         Edit the reason of a case.
@@ -496,10 +496,10 @@ class API:
         return True
 
     async def delete_case(
-            self,
-            guild: discord.Guild,
-            user: Union[discord.Member, UnavailableMember],
-            index: int,
+        self,
+        guild: discord.Guild,
+        user: Union[discord.Member, UnavailableMember],
+        index: int,
     ):
         async def delete_message(channel_id: int, message_id: int):
             channel: discord.TextChannel = guild.get_channel(channel_id)
@@ -552,7 +552,7 @@ class API:
         return True
 
     async def get_modlog_channel(
-            self, guild: discord.Guild, level: Optional[Union[int, str]] = None
+        self, guild: discord.Guild, level: Optional[Union[int, str]] = None
     ) -> discord.TextChannel:
         """
         Get the WarnSystem's modlog channel on the current guild.
@@ -635,15 +635,15 @@ class API:
         return self.bot.get_channel(channel if channel else default_channel)
 
     async def get_embeds(
-            self,
-            guild: discord.Guild,
-            member: Union[discord.Member, UnavailableMember],
-            author: Union[discord.Member, str],
-            level: int,
-            reason: Optional[str] = None,
-            time: Optional[timedelta] = None,
-            date: Optional[datetime] = None,
-            message_sent: bool = True,
+        self,
+        guild: discord.Guild,
+        member: Union[discord.Member, UnavailableMember],
+        author: Union[discord.Member, str],
+        level: int,
+        reason: Optional[str] = None,
+        time: Optional[timedelta] = None,
+        date: Optional[datetime] = None,
+        message_sent: bool = True,
     ) -> tuple:
         """
         Return two embeds, one for the modlog and one for the member.
@@ -693,7 +693,7 @@ class API:
         # prepare the status field
         total_warns = len(logs) + 1
         total_type_warns = (
-                len([x for x in logs if x["level"] == level]) + 1
+            len([x for x in logs if x["level"] == level]) + 1
         )  # number of warns of the received type
 
         # a lambda that returns a string; if True is given, a third person sentence is returned
@@ -794,7 +794,6 @@ class API:
 
         return (log_embed, user_embed)
 
-
     async def format_reason(self, guild: discord.Guild, reason: str = None) -> str:
         """
         Reformat a reason with the substitutions set on the guild.
@@ -819,20 +818,20 @@ class API:
         return reason
 
     async def warn(
-            self,
-            guild: discord.Guild,
-            members: Iterable[Union[discord.Member, UnavailableMember]],
-            author: Union[discord.Member, str],
-            level: int,
-            reason: Optional[str] = None,
-            time: Optional[timedelta] = None,
-            date: Optional[datetime] = None,
-            ban_days: Optional[int] = None,
-            log_modlog: Optional[bool] = True,
-            log_dm: Optional[bool] = True,
-            take_action: Optional[bool] = True,
-            automod: Optional[bool] = True,
-            progress_tracker: Optional[Callable[[int], Awaitable[None]]] = None,
+        self,
+        guild: discord.Guild,
+        members: Iterable[Union[discord.Member, UnavailableMember]],
+        author: Union[discord.Member, str],
+        level: int,
+        reason: Optional[str] = None,
+        time: Optional[timedelta] = None,
+        date: Optional[datetime] = None,
+        ban_days: Optional[int] = None,
+        log_modlog: Optional[bool] = True,
+        log_dm: Optional[bool] = True,
+        take_action: Optional[bool] = True,
+        automod: Optional[bool] = True,
+        progress_tracker: Optional[Callable[[int], Awaitable[None]]] = None,
     ) -> bool:
         """
         Set a warning on a member of a Discord guild and log it with the WarnSystem system.
@@ -944,8 +943,8 @@ class API:
                     ).format(bot_role=guild.me.top_role.name, member_role=member.top_role.name)
                 )
             if await self.data.guild(guild).respect_hierarchy() and (
-                    not (await self.bot.is_owner(author) or author.id == guild.owner_id)
-                    and member.top_role.position >= author.top_role.position
+                not (await self.bot.is_owner(author) or author.id == guild.owner_id)
+                and member.top_role.position >= author.top_role.position
             ):
                 return errors.NotAllowedByHierarchy(
                     "The moderator is lower than the member in the servers's role hierarchy."
@@ -1008,10 +1007,10 @@ class API:
                             member,
                             reason=audit_reason,
                             delete_message_seconds=(
-                                                           ban_days or await self.data.guild(guild).bandays.softban()
-                                                   )
-                                                   * 24
-                                                   * 3600,
+                                ban_days or await self.data.guild(guild).bandays.softban()
+                            )
+                            * 24
+                            * 3600,
                         )
                         await guild.unban(
                             member,
@@ -1024,10 +1023,10 @@ class API:
                             member,
                             reason=audit_reason,
                             delete_message_seconds=(
-                                                           ban_days or await self.data.guild(guild).bandays.ban()
-                                                   )
-                                                   * 24
-                                                   * 3600,
+                                ban_days or await self.data.guild(guild).bandays.ban()
+                            )
+                            * 24
+                            * 3600,
                         )
                 except discord.errors.HTTPException as e:
                     log.warn(
@@ -1041,7 +1040,9 @@ class API:
                 modlog_message = await mod_channel.send(embed=modlog_e)
             else:
                 modlog_message = None
-            data = await self._create_case(guild, member, author, level, date, reason, time, modlog_message)
+            data = await self._create_case(
+                guild, member, author, level, date, reason, time, modlog_message
+            )
             # start timer if there is a temporary warning
             if time and level == 5:
                 await self._start_timer(guild, member, data)
@@ -1072,7 +1073,7 @@ class API:
         # we check for all permission problem that can occur before calling the API
         # checks if the bot has send_messages and embed_links permissions in modlog channel
         if not (
-                guild.me.guild_permissions.send_messages and guild.me.guild_permissions.embed_links
+            guild.me.guild_permissions.send_messages and guild.me.guild_permissions.embed_links
         ):
             raise errors.LostPermissions(
                 _(
@@ -1466,9 +1467,9 @@ class API:
         # we cleanup their x last messages (max_messages + 1), then either send a text warn
         # or perform an actual warnsystem warn (I'm confusing ik)
         if (
-                data.warned is False
-                or (datetime.now() - data.warned).total_seconds()
-                < antispam_data["delay_before_action"]
+            data.warned is False
+            or (datetime.now() - data.warned).total_seconds()
+            < antispam_data["delay_before_action"]
         ):
             bot_message = await channel.send(
                 _("{member} you're sending messages too fast!").format(member=member.mention),
@@ -1503,7 +1504,7 @@ class API:
         return new_list
 
     def _automod_clean_cache(
-            self, guild: discord.Guild, channel: discord.TextChannel, member: discord.Member
+        self, guild: discord.Guild, channel: discord.TextChannel, member: discord.Member
     ):
         """
         We quickly end up with a dict filled with empty values, we gotta clean that.
@@ -1515,7 +1516,7 @@ class API:
                 del self.automod[guild.id]
 
     async def automod_check_for_autowarn(
-            self, guild: discord.Guild, member: discord.Member, author: discord.Member, level: int
+        self, guild: discord.Guild, member: discord.Member, author: discord.Member, level: int
     ):
         """
         Iterate through member's modlog, looking for possible automatic warns.
@@ -1541,7 +1542,7 @@ class API:
             )
 
     async def _automod_check_for_autowarn(
-            self, guild: discord.Guild, member: discord.Member, author: discord.Member, level: int
+        self, guild: discord.Guild, member: discord.Member, author: discord.Member, level: int
     ):
         """
         Prevents having to put this whole function into a try/except block.
