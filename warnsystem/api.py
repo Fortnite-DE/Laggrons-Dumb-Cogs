@@ -913,7 +913,8 @@ class API:
             The level must be an :py:class:`int` between 1 and 5.
         ~warnsystem.errors.BadArgument
             You need to provide a valid :class:`discord.Member` object, except for a
-            hackban where a :class:`discord.User` works.
+            hackban where a :class:`discord.User` works or you missing a max. 28 day time
+            when setting a timeout.
         ~warnsystem.errors.LostPermissions
             The bot lost a permission to do something (it had the perm before). This
             can be lost permissions for sending messages to the modlog channel
