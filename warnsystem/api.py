@@ -666,7 +666,7 @@ class API:
         reason: Optional[str]
             The reason of the warning.
         time: Optional[timedelta]
-            The time before the action ends. Only for timeout and ban.  # TODO: Change text, since it's required by timeouts
+            The time before the action ends. Required for timeouts, optional for bans.
         date: Optional[datetime]
             When the action was taken.
         message_sent: bool
@@ -954,7 +954,10 @@ class API:
                 return errors.MissingPermissions(
                     _("I can't take actions on the owner of the guild.")
                 )
-            # TODO: We probably need to ensure here, that time is present for timeouts
+            if level == 2 and not time or time > timedelta(days=28):
+                return errors.BadArgument(
+                    _("Timeouts require a time to be set up to 28 days maximum.")
+                )
             if member == guild.me:
                 return errors.SuicidePrevention(
                     _(
