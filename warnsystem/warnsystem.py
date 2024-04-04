@@ -823,32 +823,6 @@ class WarnSystem(
         )
 
     @commands.command()
-    @checks.mod_or_permissions(moderate_members=True)
-    async def wsunmute(
-            self, ctx: commands.Context, member: discord.Member
-    ):  # TODO: Keep Mute?
-        """
-        Remove a timeout from a member within the WarnSystem.
-
-        *wsunmute = WarnSystem unmute. Feel free to add an alias.*
-        """
-        guild = ctx.guild
-        if member.timed_out_until is None:
-            await ctx.send(_("That member isn't timed out."))
-            return
-        case = await self.cache.get_temp_action(guild, member)
-        if case and case["level"] == 2:
-            await self.cache.remove_temp_action(guild, member)
-
-        await member.timeout(
-            None,
-            reason=_(
-                "[WarnSystem] Member timeout removed by {author} (ID: {author.id})"
-            ).format(author=ctx.author),
-        )
-        await ctx.send(_("Member timeout removed."))
-
-    @commands.command()
     @commands.bot_has_permissions(ban_members=True)
     @checks.mod_or_permissions(ban_members=True)
     async def wsunban(self, ctx: commands.Context, member_id: int):
